@@ -1,0 +1,29 @@
+{
+  "rules": [
+    {
+      "enabled": false,
+      "name": "商品A-颜色图",
+      "item_ids": ["这里填商品ID"],
+      "keywords": ["颜色", "色卡", "有什么颜色", "可选颜色"],
+      "match": "contains",
+      "text": "颜色可以参考这张图。",
+      "images": [
+        {
+          "url": "这里填该商品对应图片URL",
+          "width": 1440,
+          "height": 1920,
+          "type": 0
+        }
+      ]
+    },
+    {
+      "enabled": false,
+      "name": "默认颜色图兜底",
+      "default": true,
+      "keywords": ["颜色", "色卡", "有什么颜色", "可选颜色"],
+      "match": "contains",
+      "text": "我看下这个商品对应的颜色图，稍等发你。",
+      "images": []
+    }
+  ]
+}

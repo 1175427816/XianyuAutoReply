@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>闲鱼自动回复管理后台</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>闲鱼自动回复管理后台</h1>
+        <p id="subtitle">本机数据看板与图片自动回复规则管理</p>
+      </div>
+      <button id="refreshBtn" class="primary">刷新</button>
+    </header>
+
+    <main>
+      <section class="runtime-grid">
+        <section class="panel runtime-panel">
+          <div class="panel-head">
+            <h2>运行状态</h2>
+            <span id="runtimeBadge" class="badge off">读取中</span>
+          </div>
+          <div id="runtimeDetails" class="runtime-details"></div>
+          <div class="runtime-actions">
+            <button id="startMonitorBtn" class="primary">启动监控</button>
+            <button id="restartMonitorBtn">重启监控</button>
+            <button id="stopMonitorBtn" class="danger">停止监控</button>
+          </div>
+        </section>
+
+        <section class="panel runtime-panel">
+          <div class="panel-head">
+            <h2>验证处理</h2>
+            <span id="verificationBadge" class="badge off">无验证</span>
+          </div>
+          <div id="verificationDetails" class="runtime-details"></div>
+          <div class="runtime-actions">
+            <button id="openVerificationBtn">打开验证页面</button>
+            <button id="refreshCookieBtn" class="primary">读取 Cookie 并恢复</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel logs-panel">
+        <div class="panel-head">
+          <h2>最近运行日志</h2>
+          <button id="refreshLogsBtn">刷新日志</button>
+        </div>
+        <div id="runtimeLogs" class="logs"></div>
+      </section>
+
+      <section class="filters">
+        <label>
+          开始日期
+          <input id="startDate" type="date">
+        </label>
+        <label>
+          结束日期
+          <input id="endDate" type="date">
+        </label>
+        <label class="search">
+          搜索
+          <input id="searchInput" type="search" placeholder="商品 ID、标题、图片 URL、关键词">
+        </label>
+        <button id="applyFilters">筛选</button>
+        <button id="clearFilters" class="ghost">清空</button>
+      </section>
+
+      <section id="stats" class="stats"></section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>按日期统计</h2>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>日期</th>
+                <th>自动回复</th>
+                <th>用户消息</th>
+                <th>已处理消息</th>
+                <th>验证次数</th>
+                <th>会话</th>
+                <th>商品</th>
+              </tr>
+            </thead>
+            <tbody id="dailyRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="tabs">
+        <button class="tab active" data-tab="rules">图片回复规则</button>
+        <button class="tab" data-tab="captured">捕获图片</button>
+        <button class="tab" data-tab="items">商品缓存</button>
+      </section>
+
+      <section id="rulesTab" class="panel tab-panel">
+        <div class="panel-head">
+          <h2>图片回复规则</h2>
+          <div class="actions">
+            <select id="ruleStatus">
+              <option value="">全部状态</option>
+              <option value="enabled">已启用</option>
+              <option value="disabled">已禁用</option>
+            </select>
+            <button id="newRuleBtn" class="primary">新增规则</button>
+          </div>
+        </div>
+        <div id="rulesList" class="list"></div>
+      </section>
+
+      <section id="capturedTab" class="panel tab-panel hidden">
+        <div class="panel-head">
+          <h2>捕获图片</h2>
+          <div class="actions">
+            <select id="captureStatus">
+              <option value="">全部图片</option>
+              <option value="unassigned">未分配</option>
+              <option value="assigned">已分配</option>
+            </select>
+          </div>
+        </div>
+        <div id="capturedList" class="list"></div>
+      </section>
+
+      <section id="itemsTab" class="panel tab-panel hidden">
+        <div class="panel-head">
+          <h2>商品缓存</h2>
+        </div>
+        <div id="itemsList" class="list"></div>
+      </section>
+    </main>
+
+    <dialog id="ruleDialog">
+      <form id="ruleForm" method="dialog">
+        <div class="dialog-head">
+          <h2 id="dialogTitle">编辑规则</h2>
+          <button type="button" id="closeDialog" class="icon">×</button>
+        </div>
+        <input id="ruleId" type="hidden">
+        <label>
+          规则名称
+          <input id="ruleName" required>
+        </label>
+        <label>
+          产品类型
+          <select id="ruleProductType"></select>
+        </label>
+        <label>
+          具体商品
+          <select id="ruleItemIds" multiple size="7"></select>
+        </label>
+        <label>
+          关键词
+          <input id="ruleKeywords" required placeholder="颜色,色卡,有什么颜色">
+        </label>
+        <label>
+          匹配方式
+          <select id="ruleMatch">
+            <option value="contains">包含关键词</option>
+            <option value="exact">完全匹配</option>
+          </select>
+        </label>
+        <label>
+          回复文案
+          <textarea id="ruleText" rows="3" placeholder="颜色可以参考这张图。"></textarea>
+        </label>
+        <label>
+          图片 URL
+          <textarea id="ruleImages" rows="4" placeholder="每行一个图片 URL"></textarea>
+        </label>
+        <div class="checks">
+          <label><input id="ruleEnabled" type="checkbox" checked> 启用</label>
+          <label><input id="ruleDefault" type="checkbox"> 默认兜底规则</label>
+        </div>
+        <div id="formError" class="form-error"></div>
+        <div class="dialog-actions">
+          <button type="button" id="deleteRuleBtn" class="danger hidden">删除</button>
+          <span></span>
+          <button type="button" id="cancelRule" class="ghost">取消</button>
+          <button type="submit" class="primary">保存</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast hidden"></div>
+    <script src="/app.js"></script>
+  </body>
+</html>

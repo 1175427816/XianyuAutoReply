@@ -1,0 +1,13 @@
+services:
+  xianyu-auto-reply:
+    build: .
+    container_name: xianyu-auto-reply
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - ./data:/app/data
+      - ./prompts:/app/prompts
+      - ./image_replies.json:/app/image_replies.json
